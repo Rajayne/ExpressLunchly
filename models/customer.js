@@ -57,6 +57,22 @@ class Customer {
     return `${this.firstName} ${this.lastName}`;
   }
 
+  static async search(name) {
+    const results = await db.query(
+      `SELECT id, 
+      first_name AS "firstName",  
+      last_name AS "lastName", 
+      phone, 
+      notes
+    FROM customers
+    WHERE first_name || ' ' || last_name ILIKE $1
+    ORDER BY last_name, first_name`,
+      [`%${name}%`]
+    );
+    console.log(results.rows);
+    return results.rows.map((c) => new Customer(c));
+  }
+
   /** get all reservations for this customer. */
 
   async getReservations() {
